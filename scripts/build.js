@@ -45,10 +45,10 @@ async function build(_pythonPath, _jianmuPath, _projectPath, mode ) {
     return
   }
   await emptyTempDir()
-  if (FileSystem.existsSync(Path.resolve(_projectPath, 'electron-builder.json'))) {
+  if (FileSystem.existsSync(Path.resolve(_projectPath, 'jianmu-builder.json'))) {
     const projectConfig = require(Path.resolve(
       _projectPath,
-      'electron-builder.json'
+      'jianmu-builder.json'
     ))
     config = {
       ...config,
