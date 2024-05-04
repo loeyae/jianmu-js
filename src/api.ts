@@ -1,6 +1,9 @@
 import { isMaximized, isMenuActive } from './composables/useAppState'
 
 const {
+  on,
+  send,
+  invoke,
   close,
   minimize,
   toggleDevtools,
@@ -20,7 +23,13 @@ const {
   showItemInFolder,
   openPath,
   trashItem,
-  beep
+  beep,
+  webContents,
+  //download
+  download,
+  getDownloadFileSavedPath,
+  getDownloadFileState,
+  setDownloadFileState
 } = window.api
 
 /**
@@ -57,5 +66,13 @@ export {
   openPath,
   openExternal,
   trashItem,
-  beep
+  beep,
+  webContents,
+  on,
+  send,
+  invoke,
+  download,
+  getDownloadFileSavedPath,
+  getDownloadFileState,
+  setDownloadFileState
 }

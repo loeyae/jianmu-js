@@ -15,7 +15,7 @@ const packageJSON = {
   license: 'Apache-2.0',
   homepage: 'https://github.com/frederick-wang/jianmu-template#readme',
   devDependencies: {
-    electron: '^19.0.3',
+    electron: '^22.0.2',
     'electron-builder': '^23.0.3'
   },
   dependencies: {
@@ -68,7 +68,7 @@ async function build(_pythonPath, _jianmuPath, _projectPath) {
       await builder.build({
         config: {
           ...config,
-          electronVersion: '19.0.3',
+          electronVersion: '22.0.2',
           directories: {
             output: Path.resolve(_projectPath, 'dist'),
             app: Path.resolve(__dirname, '..', '.jianmu', 'electron')

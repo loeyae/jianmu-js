@@ -68,6 +68,10 @@ const initActionSocket = (s: Socket) => {
   socket.on('Action:beep', (_: { args: [] }, callback) => {
     window.api.beep().then(callback)
   })
+
+  socket.on('Action:webcontent-func', ({ args: [func, ...args] } : { args: [string, ...any] }, callback) => {
+    window.api.webContents(func, ...args).then(callback)
+  })
 }
 
 export { initActionSocket }

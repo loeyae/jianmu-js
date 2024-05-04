@@ -1,6 +1,6 @@
 {
-  "name": "jianmu",
-  "version": "0.0.10",
+  "name": "@loeyae/jianmu",
+  "version": "0.0.2",
   "description": "A node.js package for Jianmu Framework, includeing API calls and CLI tools.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -39,7 +39,7 @@
     "Vue",
     "Electron"
   ],
-  "author": "Zhaoji Wang <hwoam@outlook.com>",
+  "author": "Zhang Yi <loeyae@gmail.com>",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/frederick-wang/jianmu-js/issues"
@@ -70,6 +70,7 @@
     "electron": "^22.0.2",
     "electron-builder": "^23.0.3",
     "element-plus": "^2.2.29",
+    "electron-log": "^5.1.0",
     "got": "^11.8.5",
     "hotkeys-js": "^3.9.4",
     "install": "^0.13.0",
