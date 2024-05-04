@@ -4,6 +4,8 @@ import { api } from 'jianmu'
 import { ref } from 'vue'
 import { isDev } from '../tools'
 
+const isDevToolActive = ref(import.meta.env.DEV_TOOLS_ACTIVE || false)
+const isDevToolShortActive = ref(import.meta.env.DEV_TOOLS_SHORT_ACTIVE || false)
 const {
   isMenuActive,
   forceReload,
@@ -22,14 +24,14 @@ hotkeys('Ctrl+W, Command+W', (e) => {
   quit()
 })
 
-if (isDev) {
+if (isDev || isDevToolActive.value || isDevToolShortActive.value) {
   hotkeys('Ctrl+Shift+R, Command+Shift+R', forceReload)
   hotkeys('Ctrl+R, Command+R', reload)
   hotkeys('Ctrl+Shift+I, Command+Option+I', toggleDevtools)
 }
 
 const openPyPIWebsite = () => {
-  openExternal('https://pypi.org/project/jianmu/')
+  openExternal('https://github.com/loeyae/jianmu/')
 }
 </script>
 
@@ -44,7 +46,7 @@ const openPyPIWebsite = () => {
         </a>
       </div>
     </div>
-    <div v-if="isDev" class="menubar-menu-button">
+    <div v-if="isDev || isDevToolActive" class="menubar-menu-button">
       <div class="menubar-menu-title">开发(D)</div>
       <div class="action-bar" :class="{ active: isMenuActive }">
         <a class="action-item" @click="reload()">

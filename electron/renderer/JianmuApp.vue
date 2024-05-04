@@ -25,7 +25,7 @@ heartbeat()
     <Suspense>
       <AppContainer
         v-loading="!isOK"
-        :element-loading-text="isOK ? '' : '正在连接 Python 端数据...'"
+        :element-loading-text="isOK ? '' : '正在启动...'"
         element-loading-background="#fff"
         style="width: 100%"
       />

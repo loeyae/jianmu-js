@@ -4,7 +4,7 @@ const ChildProcess = require('child_process')
 const Chalk = require('chalk')
 const builder = require('electron-builder')
 const { Platform } = builder
-const config = require('../config/electron-builder.json')
+let config = require('../config/electron-builder.json')
 const packageJSON = {
   name: 'jianmu-template',
   version: '0.0.2',
@@ -37,6 +37,16 @@ const { emptyTempDir } = require('./private/tools')
  */
 async function build(_pythonPath, _jianmuPath, _projectPath) {
   await emptyTempDir()
+  if (FileSystem.existsSync(Path.resolve(_projectPath, 'electron-builder.json'))) {
+    const projectConfig = require(Path.resolve(
+      _projectPath,
+      'electron-builder.json'
+    ))
+    config = {
+      ...config,
+      ...projectConfig
+    }
+  }
   console.log(Chalk.blueBright('Transpiling UI ...'))
 
   await Promise.allSettled([buildRenderer(_projectPath), buildMain()]).then(

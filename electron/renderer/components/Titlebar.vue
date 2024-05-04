@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Menubar from 'renderer/components/Menubar.vue'
 import { api } from 'jianmu'
+import { ref } from 'vue'
 
 const { minimize, toggleMaximize, close, isMaximized } = api
+const appTitle = ref(import.meta.env.VITE_APP_TITLE || 'Jianmu')
 </script>
 
 <template>
@@ -13,7 +15,7 @@ const { minimize, toggleMaximize, close, isMaximized } = api
         <img src="/appicon.png" style="height: 20px" />
       </div>
       <Menubar />
-      <div class="window-title">Jianmu</div>
+      <div class="window-title">{{ appTitle }}</div>
       <div class="window-controls-container">
         <div class="window-icon window-minimize" @click="minimize()">
           <fa :icon="['far', 'window-minimize']" />

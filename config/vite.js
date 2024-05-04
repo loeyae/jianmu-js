@@ -19,6 +19,7 @@ const getViteConfig = (projectPath) => {
    * https://vitejs.dev/config
    */
   const config = defineConfig({
+    envDir: projectPath,
     root: rendererPath,
     publicDir: 'public',
     open: false,
