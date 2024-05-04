@@ -18,7 +18,6 @@ import path from 'path'
 import { startServer, closeServer, stopServer } from './runServer'
 import downloadEvent from './downloadEvent'
 import WebContents = Electron.Main.WebContents
-import { catchErrors } from 'electron-log'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
