@@ -37,8 +37,9 @@ program
   .option('-p, --python-path <path>', 'Path to the Python executable.')
   .option('-j, --jianmu-path <path>', 'Path to the Jianmu package.')
   .option('-P, --project-path <path>', 'Path to the project.')
-  .action(({ pythonPath, jianmuPath, projectPath }) => {
-    build(pythonPath, jianmuPath, projectPath)
+  .option('-M, --mode <mode>', 'Build mode.')
+  .action(({ pythonPath, jianmuPath, projectPath, mode }) => {
+    build(pythonPath, jianmuPath, projectPath, mode)
   })
 
 program.parse(process.argv)

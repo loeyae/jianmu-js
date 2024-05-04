@@ -63,8 +63,42 @@ function copyElectronMainStaticFiles() {
   copyElectronMainFiles('static')
 }
 
+const spawnAsync = (command, args, options) => {
+  return new Promise((resolve, reject) => {
+    const child = require('child_process').spawn(command, args, options)
+    child.stdout.on('data', (data) => {
+      const prefix = Chalk.blueBright(`[python] `)
+      for (const msg of splitOutputData(data)) {
+        if (msg === '\n') {
+          process.stdout.write(msg)
+          continue
+        }
+        process.stdout.write(prefix + msg)
+      }
+    })
+    child.stderr.on('data', (data) => {
+      const prefix = Chalk.cyanBright('[python] ')
+      for (const msg of splitOutputData(data)) {
+        if (msg === '\n') {
+          process.stderr.write(msg)
+          continue
+        }
+        process.stderr.write(prefix + msg)
+      }
+    })
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Command failed: ${command} ${args.join(' ')}`), code)
+      } else {
+        resolve(code)
+      }
+    })
+  })
+}
+
 exports.splitOutputData = splitOutputData
 exports.printBanner = printBanner
 exports.emptyTempDir = emptyTempDir
 exports.copyElectronMainFiles = copyElectronMainFiles
 exports.copyElectronMainStaticFiles = copyElectronMainStaticFiles
+exports.spawnAsync = spawnAsync

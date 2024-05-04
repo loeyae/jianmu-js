@@ -26,6 +26,7 @@ const packageJSON = {
 
 const buildRenderer = require('./build-renderer')
 const buildMain = require('./build-main')
+const buildServer = require('./build-server')
 const { emptyTempDir } = require('./private/tools')
 
 /**
@@ -34,8 +35,15 @@ const { emptyTempDir } = require('./private/tools')
  * @param {string} _pythonPath Path to the Python executable.
  * @param {string} _jianmuPath Path to the Jianmu package.
  * @param {string} _projectPath Path to the project.
+ * @param {string} mode Build mode.
  */
-async function build(_pythonPath, _jianmuPath, _projectPath) {
+async function build(_pythonPath, _jianmuPath, _projectPath, mode ) {
+  if (mode === 'sever') {
+    console.log(Chalk.blueBright('Building Server ...'))
+    await buildServer(_pythonPath, _jianmuPath, _projectPath)
+    console.log(Chalk.blueBright('Server successfully built!'))
+    return
+  }
   await emptyTempDir()
   if (FileSystem.existsSync(Path.resolve(_projectPath, 'electron-builder.json'))) {
     const projectConfig = require(Path.resolve(
@@ -47,6 +55,7 @@ async function build(_pythonPath, _jianmuPath, _projectPath) {
       ...projectConfig
     }
   }
+
   console.log(Chalk.blueBright('Transpiling UI ...'))
 
   await Promise.allSettled([buildRenderer(_projectPath), buildMain()]).then(
