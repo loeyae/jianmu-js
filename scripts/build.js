@@ -16,10 +16,10 @@ const packageJSON = {
   homepage: 'https://github.com/frederick-wang/jianmu-template#readme',
   devDependencies: {
     electron: '^22.0.2',
-    "electron-log": "^5.1.0",
     'electron-builder': '^23.0.3'
   },
   dependencies: {
+    "electron-log": "^5.1.0",
     got: '^11.8.5'
   }
 }
