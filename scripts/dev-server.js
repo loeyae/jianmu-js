@@ -23,6 +23,7 @@ let rendererPort = 0
 let pythonPath = null
 let jianmuPath = null
 let projectPath = null
+let exeName = 'jm'
 let isDev = false
 
 /**
@@ -161,7 +162,8 @@ async function startElectron(copyStaticFiles = true) {
 
   const args = [
     Path.resolve(__dirname, '..', '.jianmu', 'electron', 'main.js'),
-    rendererPort
+    rendererPort,
+    exeName
   ]
   electronProcess = ChildProcess.spawn(Electron, args, {
     env: process.env
@@ -235,6 +237,14 @@ function stop() {
     flaskProcess.kill()
     flaskProcess = null
   }
+  ChildProcess.exec(`tasklist | findstr ${exeName}.exe`, (err, stdout, stderr) => {
+    if (stdout.trim() !== '') {
+      console.log(`${exeName}.exe is running`);
+      ChildProcess.exec(`taskkill /IM ${exeName}.exe /F`);
+    } else {
+      console.log(`${exeName}.exe not running`);
+    }
+  });
   process.exit()
 }
 

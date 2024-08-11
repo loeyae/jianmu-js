@@ -29,7 +29,10 @@ const {
   download,
   getDownloadFileSavedPath,
   getDownloadFileState,
-  setDownloadFileState
+  setDownloadFileState,
+  //printer
+  printerList,
+  printerPrint
 } = window.api
 
 /**
@@ -74,5 +77,8 @@ export {
   download,
   getDownloadFileSavedPath,
   getDownloadFileState,
-  setDownloadFileState
+  setDownloadFileState,
+  //printer
+  printerList,
+  printerPrint
 }

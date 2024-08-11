@@ -18,6 +18,7 @@ import path from 'path'
 import { startServer, closeServer, stopServer } from './runServer'
 import downloadEvent from './downloadEvent'
 import WebContents = Electron.Main.WebContents
+import { PosPrintData, PosPrintOptions, PosPrinter } from 'oneshell-electron-pos-printer'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -195,6 +196,18 @@ ipcMain.handle('trash-item', (_, path: string) => shell.trashItem(path))
 ipcMain.handle('beep', () => shell.beep())
 
 ipcMain.handle('platform', () => os.platform())
+ipcMain.handle('printer-list', () => mainWindow?.webContents.getPrintersAsync())
+
+ipcMain.on('printer-print', (_, data: PosPrintData[], options: PosPrintOptions) => {
+  PosPrinter.print(data, options)
+    .then(()=>{
+      mainWindow?.webContents.send('print-success')
+    })
+    .catch(e => {
+      log.error(e)
+      mainWindow?.webContents.send('print-fail', e.message)
+    })
+})
 
 ipcMain.handle('check-heartbeat', async () => {
   try {

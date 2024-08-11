@@ -1,6 +1,6 @@
 {
   "name": "@loeyae/jianmu",
-  "version": "0.0.10",
+  "version": "0.0.12",
   "description": "A node.js package for Jianmu Framework, includeing API calls and CLI tools.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -69,6 +69,7 @@
     "del": "^6.1.1",
     "electron": "^22.0.2",
     "electron-builder": "^23.0.3",
+    "oneshell-electron-pos-printer": "^1.0.148",
     "element-plus": "^2.2.29",
     "electron-log": "^5.1.0",
     "got": "^11.8.5",

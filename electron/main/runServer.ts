@@ -9,8 +9,9 @@ const startServer = (log: MainLogger) => {
   if (flaskProcess) {
     return
   }
+  const exeName = process.argv[3] || 'jm'
 
-  flaskProcess = ChildProcess.spawn(join(process.cwd(), 'resources', 'jm.exe'), {
+  flaskProcess = ChildProcess.spawn(join(process.cwd(), 'resources', exeName +`.exe`), {
     cwd: join(process.cwd(), 'resources'),
     env: {
       ...process.env
