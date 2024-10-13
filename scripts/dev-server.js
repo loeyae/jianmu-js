@@ -48,7 +48,7 @@ async function startFlask() {
     exeName = `${buildConfig['productName']}Svr`
   }
 
-  const jmPath = FileSystem.existsSync(Path.resolve(projectPath, 'jm.py')) ? Path.resolve(projectPath, exeName+ '.py') : Path.resolve(jianmuPath, 'jm.py')
+  const jmPath = FileSystem.existsSync(Path.resolve(projectPath, 'jm.py')) ? Path.resolve(projectPath, 'jm.py') : Path.resolve(jianmuPath, 'jm.py')
   const srcPath = Path.resolve(projectPath, 'src')
   const PYTHONPATH = process.env.PYTHONPATH
     ? `${srcPath}:${projectPath}:${process.env.PYTHONPATH}`
