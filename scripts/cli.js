@@ -18,7 +18,7 @@ program
   .option('-j, --jianmu-path <path>', 'Path to the Jianmu package.')
   .option('-P, --project-path <path>', 'Path to the project.')
   .action(({ pythonPath, jianmuPath, projectPath }) => {
-    startDevServer(pythonPath, jianmuPath, projectPath, 'jm', true)
+    startDevServer(pythonPath, jianmuPath, projectPath,true)
   })
 
 program
