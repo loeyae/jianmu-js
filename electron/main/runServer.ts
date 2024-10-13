@@ -2,6 +2,8 @@ import { ChildProcessWithoutNullStreams } from 'child_process'
 import ChildProcess from 'child_process'
 import { MainLogger } from 'electron-log'
 import { join } from 'path'
+import FileSystem from 'fs'
+import {  dialog } from 'electron'
 
 let flaskProcess: ChildProcessWithoutNullStreams | null
 
@@ -10,6 +12,19 @@ const startServer = (log: MainLogger) => {
     return
   }
   const exeName = process.argv[3] || 'jm'
+
+  if (!FileSystem.existsSync(join(process.cwd(), 'resources', exeName +`.exe`))) {
+    dialog.showErrorBox('error', '服务文件不存在')
+  }
+
+  ChildProcess.exec(`tasklist | findstr ${exeName}.exe`, (err, stdout, stderr) => {
+    if (stdout.trim() !== '') {
+      log.info(`${exeName}.exe is running`);
+      ChildProcess.exec(`taskkill /IM ${exeName}.exe /F`);
+    } else {
+      log.info(`${exeName}.exe not running`);
+    }
+  });
 
   flaskProcess = ChildProcess.spawn(join(process.cwd(), 'resources', exeName +`.exe`), {
     cwd: join(process.cwd(), 'resources'),

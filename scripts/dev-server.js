@@ -13,6 +13,7 @@ const {
   emptyTempDir,
   copyElectronMainFiles
 } = require('./private/tools')
+const FileSystem = require('fs')
 
 let viteServer = null
 let electronProcess = null
@@ -40,7 +41,7 @@ async function startFlask() {
   }
   console.log(Chalk.cyanBright(`[python] `) + 'Loading...')
 
-  const jmPath = Path.resolve(jianmuPath, 'jm.py')
+  const jmPath = FileSystem.existsSync(Path.resolve(projectPath, exeName+ '.py')) ? Path.resolve(projectPath, exeName+ '.py') : Path.resolve(jianmuPath, 'jm.py')
   const srcPath = Path.resolve(projectPath, 'src')
   const PYTHONPATH = process.env.PYTHONPATH
     ? `${srcPath}:${projectPath}:${process.env.PYTHONPATH}`

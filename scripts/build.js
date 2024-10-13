@@ -20,6 +20,7 @@ const packageJSON = {
   },
   dependencies: {
     "electron-log": "^5.1.0",
+    "oneshell-electron-pos-printer": "^1.0.148",
     got: '^11.8.5'
   }
 }
