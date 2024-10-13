@@ -15,13 +15,13 @@ const startServer = (log: MainLogger) => {
   }
   let exeName = 'jm'
 
-  if (!FileSystem.existsSync(join(process.cwd(), 'jianmu-builder.json'))) {
+  if (FileSystem.existsSync(join(process.cwd(), 'jianmu-builder.json'))) {
     const buildConfig = JSON.parse(FileSystem.readFileSync(join(process.cwd(), 'jianmu-builder.json'), 'utf8'))
     exeName = `${buildConfig['productName']}Svr`
   }
 
   if (!FileSystem.existsSync(join(process.cwd(), 'resources', exeName +`.exe`))) {
-    dialog.showErrorBox('error', '服务文件不存在')
+    dialog.showErrorBox('error', `服务文件：${exeName}.exe不存在`)
   }
 
   ChildProcess.exec(`tasklist | findstr ${exeName}.exe`, (err, stdout, stderr) => {
