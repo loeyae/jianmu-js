@@ -47,10 +47,7 @@ async function build(_pythonPath, _jianmuPath, _projectPath, mode ) {
   }
   await emptyTempDir()
   if (FileSystem.existsSync(Path.resolve(_projectPath, 'jianmu-builder.json'))) {
-    const projectConfig = require(Path.resolve(
-      _projectPath,
-      'jianmu-builder.json'
-    ))
+    const projectConfig = require(Path.resolve(_projectPath, 'jianmu-builder.json'))
     config = {
       ...config,
       ...projectConfig
@@ -64,6 +61,9 @@ async function build(_pythonPath, _jianmuPath, _projectPath, mode ) {
       console.log(Chalk.greenBright('UI successfully transpiled!'))
     }
   )
+
+  const pkgJson = require(Path.resolve(_projectPath, 'package.json'))
+  packageJSON['version'] = pkgJson['version']
 
   await FileSystem.promises.writeFile(
     Path.resolve(__dirname, '..', '.jianmu', 'electron', 'package.json'),

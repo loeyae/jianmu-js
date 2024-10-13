@@ -7,11 +7,18 @@ import {  dialog } from 'electron'
 
 let flaskProcess: ChildProcessWithoutNullStreams | null
 
+
+
 const startServer = (log: MainLogger) => {
   if (flaskProcess) {
     return
   }
-  const exeName = process.argv[3] || 'jm'
+  let exeName = 'jm'
+
+  if (!FileSystem.existsSync(join(process.cwd(), 'jianmu-builder.json'))) {
+    const buildConfig = JSON.parse(FileSystem.readFileSync(join(process.cwd(), 'jianmu-builder.json'), 'utf8'))
+    exeName = `${buildConfig['productName']}Svr`
+  }
 
   if (!FileSystem.existsSync(join(process.cwd(), 'resources', exeName +`.exe`))) {
     dialog.showErrorBox('error', '服务文件不存在')

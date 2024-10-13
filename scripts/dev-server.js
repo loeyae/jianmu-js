@@ -27,6 +27,9 @@ let projectPath = null
 let exeName = 'jm'
 let isDev = false
 
+
+
+
 /**
  * Start the Flask server.
  *
@@ -40,8 +43,12 @@ async function startFlask() {
     return
   }
   console.log(Chalk.cyanBright(`[python] `) + 'Loading...')
+  if (FileSystem.existsSync(Path.resolve(projectPath, 'jianmu-builder.json'))) {
+    const buildConfig = require(Path.resolve(projectPath, 'jianmu-builder.json'))
+    exeName = `${buildConfig['productName']}Svr`
+  }
 
-  const jmPath = FileSystem.existsSync(Path.resolve(projectPath, exeName+ '.py')) ? Path.resolve(projectPath, exeName+ '.py') : Path.resolve(jianmuPath, 'jm.py')
+  const jmPath = FileSystem.existsSync(Path.resolve(projectPath, 'jm.py')) ? Path.resolve(projectPath, exeName+ '.py') : Path.resolve(jianmuPath, 'jm.py')
   const srcPath = Path.resolve(projectPath, 'src')
   const PYTHONPATH = process.env.PYTHONPATH
     ? `${srcPath}:${projectPath}:${process.env.PYTHONPATH}`
