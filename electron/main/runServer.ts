@@ -4,36 +4,30 @@ import { MainLogger } from 'electron-log'
 import { join } from 'path'
 import FileSystem from 'fs'
 import {  dialog } from 'electron'
+import log from 'electron-log/main'
 
 let flaskProcess: ChildProcessWithoutNullStreams | null
 
+let exeName = 'jm'
 
+if (FileSystem.existsSync(join(process.cwd(), 'jianmu-builder.json'))) {
+  const buildConfig = JSON.parse(FileSystem.readFileSync(join(process.cwd(), 'jianmu-builder.json'), 'utf8'))
+  exeName = `${buildConfig['productName']}Svr`
+}
 
 const startServer = (log: MainLogger) => {
   if (flaskProcess) {
     return
   }
-  let exeName = 'jm'
+  log.info('starting server...')
 
-  if (FileSystem.existsSync(join(process.cwd(), 'jianmu-builder.json'))) {
-    const buildConfig = JSON.parse(FileSystem.readFileSync(join(process.cwd(), 'jianmu-builder.json'), 'utf8'))
-    exeName = `${buildConfig['productName']}Svr`
-  }
-
-  if (!FileSystem.existsSync(join(process.cwd(), 'resources', exeName +`.exe`))) {
+  if (!FileSystem.existsSync(join(process.cwd(), 'resources', exeName + `.exe`))) {
     dialog.showErrorBox('error', `服务文件：${exeName}.exe不存在`)
   }
 
-  ChildProcess.exec(`tasklist | findstr ${exeName}.exe`, (err, stdout, stderr) => {
-    if (stdout.trim() !== '') {
-      log.info(`${exeName}.exe is running`);
-      ChildProcess.exec(`taskkill /IM ${exeName}.exe /F`);
-    } else {
-      log.info(`${exeName}.exe not running`);
-    }
-  });
+  killServer()
 
-  flaskProcess = ChildProcess.spawn(join(process.cwd(), 'resources', exeName +`.exe`), {
+  flaskProcess = ChildProcess.spawn(join(process.cwd(), 'resources', exeName + `.exe`), {
     cwd: join(process.cwd(), 'resources'),
     env: {
       ...process.env
@@ -51,6 +45,23 @@ const startServer = (log: MainLogger) => {
   flaskProcess.on('exit', () => {
     stopServer()
   })
+  log.info('server running...')
+}
+
+const killServer = () => {
+  flaskProcess = null
+  try {
+    const stdout = ChildProcess.execSync(`tasklist | findstr ${exeName}.exe`).toString()
+    log.info(stdout)
+    if (stdout.trim() !== '') {
+      log.info(`${exeName}.exe is running`);
+      ChildProcess.exec(`taskkill /IM ${exeName}.exe /F`);
+    } else {
+      log.info(`${exeName}.exe not running`);
+    }
+  } catch (e) {
+    log.info(`${exeName}.exe not running`);
+  }
 }
 
 const stopServer = () => {
@@ -59,6 +70,7 @@ const stopServer = () => {
     flaskProcess.kill()
     flaskProcess = null
   }
+  killServer()
 }
 
 const closeServer = () => {
@@ -67,6 +79,7 @@ const closeServer = () => {
     flaskProcess.kill()
     flaskProcess = null
   }
+  killServer()
 }
 
 export { startServer, stopServer, closeServer }

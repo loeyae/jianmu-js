@@ -1,24 +1,22 @@
 import {
   app,
   BrowserWindow,
+  dialog,
   ipcMain,
-  Menu,
   MessageBoxOptions,
   OpenDialogOptions,
   OpenExternalOptions,
   SaveDialogOptions,
-  shell,
-  dialog
+  shell
 } from 'electron'
-import { join } from 'path'
+import path, { join } from 'path'
 import got from 'got'
 import os from 'os'
 import log from 'electron-log/main'
-import path from 'path'
-import { startServer, closeServer, stopServer } from './runServer'
+import { closeServer, startServer, stopServer } from './runServer'
 import downloadEvent from './downloadEvent'
+import { PosPrintData, PosPrinter, PosPrintOptions } from 'oneshell-electron-pos-printer'
 import WebContents = Electron.Main.WebContents
-import { PosPrintData, PosPrintOptions, PosPrinter } from 'oneshell-electron-pos-printer'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -32,9 +30,9 @@ if (!isDevelopment) {
 }
 log.transports.file.resolvePathFn = () => {
   if (isDevelopment) {
-    return path.join(path.dirname(app.getAppPath()), 'log', 'main.log')
+    return path.join(path.dirname(app.getAppPath()), '../../../../', 'log', 'main.log')
   }
-  return path.join(app.getPath('exe'), 'log', 'main.log')
+  return path.join(path.dirname(app.getPath('exe')), 'log', 'main.log')
 }
 
 // Menu.setApplicationMenu(null)
@@ -87,7 +85,7 @@ app.on('window-all-closed', function () {
   // if (process.platform !== 'darwin') {
   //   app.quit()
   // }
-  if (isDevelopment) {
+  if (!isDevelopment) {
     closeServer()
   }
   app.quit()
@@ -108,7 +106,7 @@ ipcMain.on('toggle-maximize', () => {
 })
 
 ipcMain.on('close', () => {
-  if (isDevelopment) {
+  if (!isDevelopment) {
     stopServer()
   }
   mainWindow?.close()
@@ -129,7 +127,7 @@ ipcMain.on('force-reload', () => {
 })
 
 ipcMain.on('quit', () => {
-  if (isDevelopment) {
+  if (!isDevelopment) {
     stopServer()
   }
   app.quit()
@@ -210,6 +208,7 @@ ipcMain.on('printer-print', (_, data: PosPrintData[], options: PosPrintOptions) 
     })
 })
 
+let count = 0
 ipcMain.handle('check-heartbeat', async () => {
   try {
     const res = await got.get(
@@ -218,8 +217,15 @@ ipcMain.handle('check-heartbeat', async () => {
         timeout: 1000
       }
     )
+    count = 0
     return res.statusCode === 200
-  } catch {
+  } catch(e) {
+    count += 1
+    log.info("check-heartbeat:", count)
+    if (!isDevelopment && count > 30) {
+      closeServer()
+      startServer(log)
+    }
     return false
   }
 })

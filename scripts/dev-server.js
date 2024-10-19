@@ -24,7 +24,6 @@ let rendererPort = 0
 let pythonPath = null
 let jianmuPath = null
 let projectPath = null
-let exeName = 'jm'
 let isDev = false
 
 
@@ -43,10 +42,10 @@ async function startFlask() {
     return
   }
   console.log(Chalk.cyanBright(`[python] `) + 'Loading...')
-  if (FileSystem.existsSync(Path.resolve(projectPath, 'jianmu-builder.json'))) {
-    const buildConfig = require(Path.resolve(projectPath, 'jianmu-builder.json'))
-    exeName = `${buildConfig['productName']}Svr`
-  }
+  // if (FileSystem.existsSync(Path.resolve(projectPath, 'jianmu-builder.json'))) {
+  //   const buildConfig = require(Path.resolve(projectPath, 'jianmu-builder.json'))
+  //   exeName = `${buildConfig['productName']}Svr`
+  // }
 
   const jmPath = FileSystem.existsSync(Path.resolve(projectPath, 'jm.py')) ? Path.resolve(projectPath, 'jm.py') : Path.resolve(jianmuPath, 'jm.py')
   const srcPath = Path.resolve(projectPath, 'src')
@@ -170,8 +169,7 @@ async function startElectron(copyStaticFiles = true) {
 
   const args = [
     Path.resolve(__dirname, '..', '.jianmu', 'electron', 'main.js'),
-    rendererPort,
-    exeName
+    rendererPort
   ]
   electronProcess = ChildProcess.spawn(Electron, args, {
     env: process.env
@@ -245,14 +243,6 @@ function stop() {
     flaskProcess.kill()
     flaskProcess = null
   }
-  ChildProcess.exec(`tasklist | findstr ${exeName}.exe`, (err, stdout, stderr) => {
-    if (stdout.trim() !== '') {
-      console.log(`${exeName}.exe is running`);
-      ChildProcess.exec(`taskkill /IM ${exeName}.exe /F`);
-    } else {
-      console.log(`${exeName}.exe not running`);
-    }
-  });
   process.exit()
 }
 
