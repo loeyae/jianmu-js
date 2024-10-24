@@ -7,7 +7,8 @@ import {
   OpenDialogOptions,
   OpenExternalOptions,
   SaveDialogOptions,
-  shell
+  shell,
+  protocol
 } from 'electron'
 import path, { join } from 'path'
 import got from 'got'
@@ -64,8 +65,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // 这个需要在app.ready触发之后使用
+  protocol.registerFileProtocol('atom', (request, callback) => {
+    const pathname = path.normalize(decodeURIComponent(request.url.replace('atom://', '')));
+    callback(pathname)
+  })
   createWindow()
-
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

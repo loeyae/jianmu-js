@@ -85,6 +85,10 @@ const api = {
     ipcRenderer.invoke('check-heartbeat') as Promise<boolean>,
   webContents: (func: string, ...args: any[]) =>
     ipcRenderer.invoke('webcontent-func', func, ...args) as Promise<any>,
+  ping: (message: string) => ipcRenderer.invoke('ping', message) as Promise<void>,
+  fileDelete: (path: string) => ipcRenderer.invoke('file-delete', path) as Promise<boolean>,
+  fileExists: (path: string) => ipcRenderer.invoke('file-exists', path) as Promise<boolean>,
+  openDir: (path: string, isOpenFile: boolean) => ipcRenderer.invoke('open-dir', path, isOpenFile) as Promise<string>
 }
 
 contextBridge.exposeInMainWorld('api', api)
