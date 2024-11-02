@@ -10,7 +10,7 @@ import {
   SaveDialogReturnValue
 } from 'electron'
 import PythonResponse from './types/PythonResponse'
-import { PosPrintData, PosPrintOptions } from 'oneshell-electron-pos-printer'
+import WebContentsPrintOptions = Electron.WebContentsPrintOptions
 
 const platform = () => ipcRenderer.invoke('platform') as Promise<string>
 // platform.isMac = async () => (await platform()) === 'darwin'
@@ -32,7 +32,7 @@ const api = {
   forceReload: () => ipcRenderer.send('force-reload'),
   quit: () => ipcRenderer.send('quit'),
   printerList: () => ipcRenderer.invoke('printer-list'),
-  printerPrint: (data: PosPrintData[], options: PosPrintOptions) => ipcRenderer.send('printer-print', data, options),
+  printerPrint: (options: WebContentsPrintOptions, callback: (success: boolean, failureReason: string) => void) => ipcRenderer.send('printer-print', options, callback),
   requestPython: <T = any>(method: string, ...args: any[]) =>
     ipcRenderer.invoke('request-python', method, ...args) as Promise<
       PythonResponse<T>

@@ -15,9 +15,10 @@ import got from 'got'
 import os from 'os'
 import log from 'electron-log/main'
 import { closeServer, startServer, stopServer } from './runServer'
-import downloadEvent from './downloadEvent'
-import { PosPrintData, PosPrinter, PosPrintOptions } from 'oneshell-electron-pos-printer'
+import { downloadFile, downloadListener } from './downloadEvent'
 import WebContents = Electron.Main.WebContents
+import fs from 'fs'
+import WebContentsPrintOptions = Electron.WebContentsPrintOptions
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -42,7 +43,7 @@ let mainWindow: BrowserWindow | null
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1024,
+    width: 1280,
     height: 768,
     frame: false,
     icon: join(__dirname, 'static/icon.png'),
@@ -60,7 +61,6 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(app.getAppPath(), 'renderer', 'index.html'))
   }
-  downloadEvent(mainWindow, log)
   log.info('mainWindow created')
 }
 
@@ -79,6 +79,14 @@ app.whenReady().then(() => {
     }
   })
 })
+
+// app.on('session-created', session => {
+//   if (mainWindow) {
+//     downloadListener(mainWindow, session, log)
+//   } else {
+//     log.error('session-created: mainWindow is null')
+//   }
+// })
 
 app.on('ready', () => {
   if (!isDevelopment) {
@@ -187,6 +195,19 @@ ipcMain.handle('show-item-in-folder', (_, fullPath: string) =>
   shell.showItemInFolder(fullPath)
 )
 
+/**
+ * 接收渲染进程 下载文件的通知
+ */
+ipcMain.on('download-file', function(event, url, filePath, fingerPrint) {
+  if (mainWindow) {
+    log.info('download-file', url)
+    downloadListener(mainWindow, event.sender.session, log, true)
+    downloadFile(mainWindow, log, url, filePath, fingerPrint)
+  } else {
+    log.error('mainWindow is null')
+  }
+})
+
 ipcMain.handle('open-path', (_, path: string) => shell.openPath(path))
 
 ipcMain.handle(
@@ -202,15 +223,8 @@ ipcMain.handle('beep', () => shell.beep())
 ipcMain.handle('platform', () => os.platform())
 ipcMain.handle('printer-list', () => mainWindow?.webContents.getPrintersAsync())
 
-ipcMain.on('printer-print', (_, data: PosPrintData[], options: PosPrintOptions) => {
-  PosPrinter.print(data, options)
-    .then(()=>{
-      mainWindow?.webContents.send('print-success')
-    })
-    .catch(e => {
-      log.error(e)
-      mainWindow?.webContents.send('print-fail', e.message)
-    })
+ipcMain.on('printer-print', (_, options: WebContentsPrintOptions, callback?: (success: boolean, failureReason: string) => void) => {
+  mainWindow?.webContents.print(options, callback)
 })
 
 let count = 0
@@ -233,6 +247,55 @@ ipcMain.handle('check-heartbeat', async () => {
     }
     return false
   }
+})
+
+
+/**接收渲染进程 打开指定路径的本地文件 的通知 并返回结果（路径存在能打开就返回true，路径不存在无法打开就返回false）
+ * @param {Object} event
+ * @param {String} path
+ */
+ipcMain.handle('open-dir', function (event, path, isOpenFile) {
+  log.info('open-dir', path);
+  if (!path) return false;
+  if (isOpenFile) {
+    shell.openPath(path);//打开文件
+    return true;
+  } else {
+    const checkPath = fs.existsSync(path);//以同步的方法检测文件路径是否存在。
+    log.info('file exists:', checkPath);
+    if (checkPath) {//文件存在直接打开所在目录
+      shell.showItemInFolder(path);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+});
+
+/**
+ * 接收渲染进程 判断文件路径是否存在 的通知 返回是否存在的布尔值结果
+ */
+ipcMain.handle('fs-exists', function (event, path) {
+  if (!path) return false;
+  //以同步的方法检测文件路径是否存在。
+  return fs.existsSync(path);
+});
+
+/**
+ * 接收渲染进程 删除文件 的通知 返回是否时间啊名称及的布尔值结果
+ */
+ipcMain.handle('fs-delete', function (event, path) {
+  if (!path) return false;
+  const checkPath = fs.existsSync(path);
+  if (checkPath) {
+    fs.rmSync(path)
+  }
+  return true
+});
+
+ipcMain.handle('fs-mkdir', function (event, path){
+  return fs.mkdirSync(path, { mode: 0o777, recursive: true})
 })
 
 ipcMain.handle('webcontent-func',(_, func: string, ...args: any[]) => {
