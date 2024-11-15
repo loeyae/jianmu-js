@@ -7,13 +7,19 @@ import { api } from 'jianmu'
 const { checkHeartbeat } = api
 
 const isOK = ref(false)
+const heartbeatInterval = ref(5000)
 const heartbeat = async () => {
   try {
     isOK.value = await checkHeartbeat()
+    if (isOK.value && heartbeatInterval.value === 5000) {
+      heartbeatInterval.value = 30000
+    } else if (!isOK.value && heartbeatInterval.value === 30000) {
+      heartbeatInterval.value = 5000
+    }
   } catch (e) {
     console.error('Heartbeat check failed.')
   } finally {
-    setTimeout(heartbeat, 5000)
+    setTimeout(heartbeat, heartbeatInterval.value)
   }
 }
 heartbeat()
