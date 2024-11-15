@@ -13,7 +13,7 @@ const heartbeat = async () => {
   } catch (e) {
     console.error('Heartbeat check failed.')
   } finally {
-    setTimeout(heartbeat, 1000)
+    setTimeout(heartbeat, 5000)
   }
 }
 heartbeat()
